@@ -11,7 +11,7 @@ import { Clock, Package, Truck, CheckCircle, Palette } from 'lucide-react'
 import './OrdersPage.css'
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders)
+  const [orders] = useState<Order[]>(mockOrders)
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(mockOrders)
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'All'>('All')
   const [selectedAlertType, setSelectedAlertType] = useState<AdminAlertType | 'all'>('all')
@@ -131,14 +131,6 @@ export default function OrdersPage() {
 
   const handleCloseModal = () => {
     setSelectedOrder(null)
-  }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount)
   }
 
   const formatDeadline = (deadline?: string) => {

@@ -1,5 +1,5 @@
 import { Order, AdminAlertType } from '../types/order'
-import { AlertCircle, Clock, AlertTriangle, Truck, User, DollarSign } from 'lucide-react'
+import { AlertCircle, Clock, AlertTriangle, Truck, User } from 'lucide-react'
 import './AlertDashboard.css'
 
 type FilterAction = AdminAlertType | 'all' | 'critical_priority' | 'requires_action'

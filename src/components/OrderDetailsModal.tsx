@@ -1,5 +1,5 @@
-import { Order, OrderStatus } from '../types/order'
-import { X, Clock, User, Package, Store, MapPin, CheckCircle, XCircle, Send, RefreshCw, FileText, MessageSquare } from 'lucide-react'
+import { Order } from '../types/order'
+import { X, Clock, User, Store, MapPin, CheckCircle, XCircle, Send, RefreshCw, FileText, MessageSquare } from 'lucide-react'
 import AlertBadge from './AlertBadge'
 import './OrderDetailsModal.css'
 

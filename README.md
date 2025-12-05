@@ -53,6 +53,58 @@ npm run dev
 npm run build
 ```
 
+## Deployment
+
+### Deploying to Vercel
+
+This project is configured for easy deployment on Vercel.
+
+#### Option 1: Deploy via Vercel CLI
+
+1. Install Vercel CLI (if not already installed):
+```bash
+npm i -g vercel
+```
+
+2. Deploy:
+```bash
+vercel
+```
+
+3. For production deployment:
+```bash
+vercel --prod
+```
+
+#### Option 2: Deploy via Vercel Dashboard
+
+1. Push your code to GitHub/GitLab/Bitbucket
+2. Import your repository in the [Vercel Dashboard](https://vercel.com/dashboard)
+3. Vercel will automatically detect it's a Vite project and configure:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Framework Preset: Vite
+
+#### Vercel Configuration
+
+The `vercel.json` file is configured to:
+- Handle client-side routing (all routes redirect to `index.html`)
+- Set proper caching headers for static assets
+- Configure security headers
+- Support all routes: `/dashboard`, `/orders`, `/partners`, `/products`, `/disputes`, `/payouts`, `/analytics`, `/content`, `/settings`
+
+#### Troubleshooting
+
+If you encounter routing issues (404 errors on direct route access):
+- Ensure `vercel.json` is in the project root
+- Verify the rewrite rule is configured correctly
+- Check that `outputDirectory` is set to `dist`
+
+Common Vercel errors and solutions:
+- **404 on routes**: Already handled by `vercel.json` rewrites
+- **Build fails**: Check TypeScript errors with `npm run build` locally
+- **Static assets not loading**: Verify asset paths are relative
+
 ## Order Status Flow
 
 1. **Order Placed** → Order created and assigned to vendor
