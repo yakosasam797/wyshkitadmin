@@ -1,0 +1,90 @@
+.preview-state {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.preview-state-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-version {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.preview-status-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.preview-status-icon.approved {
+  color: #059669;
+}
+
+.preview-status-icon.declined {
+  color: #dc2626;
+}
+
+.preview-waiting {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6b7280;
+}
+
+.preview-party-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.preview-waiting-text {
+  font-size: 11px;
+}
+
+.preview-countdown {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.preview-countdown:not(.overdue) {
+  color: #f59e0b;
+}
+
+.preview-countdown.overdue {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.preview-countdown-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.preview-countdown-text {
+  font-size: 11px;
+}
+
+.preview-feedback {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+}
+
+.preview-feedback-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.preview-feedback-text {
+  font-size: 11px;
+  font-weight: 500;
+}
+

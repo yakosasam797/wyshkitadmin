@@ -1,0 +1,87 @@
+.vendor-performance-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.vendor-metrics-row {
+  display: flex;
+  gap: 12px;
+}
+
+.vendor-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vendor-metric-label {
+  font-size: 10px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vendor-metric-value {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.vendor-metric-value.good {
+  color: #059669;
+}
+
+.vendor-metric-value.medium {
+  color: #f59e0b;
+}
+
+.vendor-metric-value.poor {
+  color: #dc2626;
+}
+
+.vendor-risk-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vendor-risk-high {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.vendor-risk-medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.vendor-risk-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.vendor-risk-text {
+  line-height: 1;
+}
+
+.vendor-refund-risk {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.vendor-refund-icon {
+  width: 12px;
+  height: 12px;
+}
+

@@ -56,23 +56,41 @@
 
 .orders-table tbody tr {
   border-bottom: 1px solid #e5e7eb;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .orders-table tbody tr:hover {
-  background-color: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Priority-based row styling */
+.orders-table tbody tr.order-priority-critical {
+  background-color: #fef2f2 !important;
+}
+
+.orders-table tbody tr.order-priority-critical:hover {
+  background-color: #fee2e2 !important;
+}
+
+.orders-table tbody tr.order-priority-at-risk {
+  background-color: #fffbeb !important;
+}
+
+.orders-table tbody tr.order-priority-at-risk:hover {
+  background-color: #fef3c7 !important;
+}
+
+.orders-table tbody tr.order-priority-healthy {
+  background-color: #ffffff !important;
+}
+
+.orders-table tbody tr.order-priority-healthy:hover {
+  background-color: #f9fafb !important;
 }
 
 .orders-table tbody tr.requires-action {
-  background-color: #fef3c7;
-}
-
-.orders-table tbody tr.requires-action:hover {
-  background-color: #fde68a;
-}
-
-.orders-table tbody tr.has-alerts {
-  border-left: 3px solid #dc2626;
+  border-left-width: 4px !important;
 }
 
 .orders-table td {
@@ -81,19 +99,39 @@
   color: #1f2937;
 }
 
-.order-id {
-  font-weight: 600;
-  color: #1f2937;
+/* Alert Level Cell */
+.alert-level-cell {
+  min-width: 200px;
 }
 
-.product-cell {
-  min-width: 250px;
-}
-
-.product-info {
+.priority-tags-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   align-items: center;
-  gap: 0.75rem;
+}
+
+.more-tags {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Product + Vendor Cell */
+.product-vendor-cell {
+  min-width: 300px;
+}
+
+.product-vendor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .product-image {
@@ -102,20 +140,95 @@
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.product-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .product-name {
-  font-weight: 500;
+  font-weight: 600;
   color: #1f2937;
+  font-size: 0.9rem;
+}
+
+.vendor-info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vendor-icon {
+  width: 14px;
+  height: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.vendor-name {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Customer Cell */
+.customer-cell {
+  min-width: 150px;
+}
+
+.customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .customer-name {
-  font-weight: 500;
+  font-weight: 600;
   color: #1f2937;
 }
 
-.deadline-cell {
+.customer-phone {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* SLA Timer Cell */
+.sla-timer-cell {
   min-width: 150px;
+}
+
+.sla-timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sla-timer.overdue {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.sla-timer:not(.overdue) {
+  color: #f59e0b;
+}
+
+.sla-timer-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .deadline {
@@ -162,13 +275,19 @@
   height: 16px;
 }
 
-.alerts-cell {
-  min-width: 80px;
+/* Preview State Cell */
+.preview-state-cell {
+  min-width: 180px;
 }
 
-.action-cell {
-  min-width: 80px;
-  text-align: right;
+.no-preview {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+/* Quick Actions Cell */
+.quick-actions-cell {
+  min-width: 250px;
 }
 
 .empty-state {
@@ -183,6 +302,6 @@
   }
 
   .orders-table {
-    min-width: 1000px;
+    min-width: 1400px;
   }
 }

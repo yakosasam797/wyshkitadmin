@@ -5,10 +5,14 @@ import AlertDashboard from '../components/AlertDashboard'
 import RiskRadar from '../components/RiskRadar'
 import OrderFilters from '../components/OrderFilters'
 import OrderStatusTabs from '../components/OrderStatusTabs'
-import AlertBadge from '../components/AlertBadge'
-import AdminActionMenu from '../components/AdminActionMenu'
 import OrderDetailsModal from '../components/OrderDetailsModal'
-import { Clock, Package, Truck, CheckCircle, Palette } from 'lucide-react'
+import PriorityTag from '../components/PriorityTag'
+import PreviewState from '../components/PreviewState'
+import VendorPerformanceBadge from '../components/VendorPerformanceBadge'
+import InlineOrderActions from '../components/InlineOrderActions'
+import RiskFilterPresets, { RiskFilterPreset } from '../components/RiskFilterPresets'
+import { calculateOrderPriority, getPriorityColorScheme } from '../utils/priorityCalculations'
+import { Clock, Package, Truck, CheckCircle, Palette, Store } from 'lucide-react'
 import './OrdersPage.css'
 
 export default function OrdersPage() {
@@ -22,29 +26,13 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [activeRiskFilter, setActiveRiskFilter] = useState<'preview_sla' | 'fresh_perishables' | 'delivery_issues' | null>(null)
+  const [activeRiskPreset, setActiveRiskPreset] = useState<RiskFilterPreset>(null)
 
-  // Calculate priority scores for orders
+  // Calculate priority using new priority calculation system
   const ordersWithPriority = useMemo(() => {
     return orders.map((order) => {
-      let score = 0
-      const criticalAlerts = order.adminFlags.filter((f) => f.priority === 'critical' && !f.resolvedAt).length
-      const highAlerts = order.adminFlags.filter((f) => f.priority === 'high' && !f.resolvedAt).length
-      const mediumAlerts = order.adminFlags.filter((f) => f.priority === 'medium' && !f.resolvedAt).length
-
-      score += criticalAlerts * 1000
-      score += highAlerts * 100
-      score += mediumAlerts * 10
-
-      if (order.requiresAdminAction) {
-        score += 50
-      }
-
-      // Fresh perishables get higher priority
-      if (order.productType === 'Fresh Perishable' && order.status !== 'Delivered') {
-        score += 20
-      }
-
-      return { ...order, priorityScore: score }
+      const priorityInfo = calculateOrderPriority(order)
+      return { ...order, priorityScore: priorityInfo.score, priorityInfo }
     })
   }, [orders])
 
@@ -69,6 +57,50 @@ export default function OrdersPage() {
 
     return counts
   }, [orders])
+
+  // Calculate risk filter preset counts
+  const riskFilterCounts = useMemo(() => {
+    const now = new Date()
+    let critical = 0
+    let deliveryFailures = 0
+    let awaitingPreview = 0
+    let freshOnly = 0
+
+    ordersWithPriority.forEach((order) => {
+      const priorityInfo = (order as any).priorityInfo || calculateOrderPriority(order)
+      
+      // Critical (priority level critical)
+      if (priorityInfo.level === 'critical') {
+        critical++
+      }
+
+      // Delivery Failures
+      if (
+        order.adminFlags.some((f) => f.type === 'delivery_failure' && !f.resolvedAt) ||
+        (order.rtoStatus && order.rtoStatus !== 'none')
+      ) {
+        deliveryFailures++
+      } else if (order.status === 'Out for Delivery' && order.outForDeliverySince) {
+        const since = new Date(order.outForDeliverySince)
+        const diffHours = (now.getTime() - since.getTime()) / (1000 * 60 * 60)
+        if (diffHours > 24) {
+          deliveryFailures++
+        }
+      }
+
+      // Awaiting Preview
+      if (order.status === 'Awaiting Approval' && order.previewSlaDeadline) {
+        awaitingPreview++
+      }
+
+      // Fresh Only
+      if (order.productType === 'Fresh Perishable' && order.status !== 'Delivered') {
+        freshOnly++
+      }
+    })
+
+    return { critical, deliveryFailures, awaitingPreview, freshOnly }
+  }, [ordersWithPriority])
 
   // Apply filters
   useEffect(() => {
@@ -98,6 +130,30 @@ export default function OrdersPage() {
       filtered = filtered.filter((order) => order.requiresAdminAction)
     }
 
+    // Risk filter presets
+    if (activeRiskPreset) {
+      const now = new Date()
+      if (activeRiskPreset === 'critical') {
+        filtered = filtered.filter((order) => {
+          const priorityInfo = (order as any).priorityInfo || calculateOrderPriority(order)
+          return priorityInfo.level === 'critical'
+        })
+      } else if (activeRiskPreset === 'delivery_failures') {
+        filtered = filtered.filter((order) => {
+          return (
+            order.adminFlags.some((f) => f.type === 'delivery_failure' && !f.resolvedAt) ||
+            (order.rtoStatus && order.rtoStatus !== 'none') ||
+            (order.status === 'Out for Delivery' && order.outForDeliverySince && 
+             (now.getTime() - new Date(order.outForDeliverySince).getTime()) / (1000 * 60 * 60) > 24)
+          )
+        })
+      } else if (activeRiskPreset === 'awaiting_preview') {
+        filtered = filtered.filter((order) => order.status === 'Awaiting Approval' && order.previewSlaDeadline)
+      } else if (activeRiskPreset === 'fresh_only') {
+        filtered = filtered.filter((order) => order.productType === 'Fresh Perishable' && order.status !== 'Delivered')
+      }
+    }
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
@@ -118,7 +174,7 @@ export default function OrdersPage() {
     })
 
     setFilteredOrders(filtered)
-  }, [ordersWithPriority, selectedStatus, selectedAlertType, selectedPriority, selectedVendor, requiresActionOnly, searchQuery])
+  }, [ordersWithPriority, selectedStatus, selectedAlertType, selectedPriority, selectedVendor, requiresActionOnly, activeRiskPreset, searchQuery])
 
   const handleAdminAction = (action: string, orderId: string) => {
     const order = orders.find((o) => o.id === orderId)
@@ -216,6 +272,12 @@ export default function OrdersPage() {
       </div>
 
       <div className="orders-content">
+        <RiskFilterPresets
+          activePreset={activeRiskPreset}
+          onPresetChange={setActiveRiskPreset}
+          counts={riskFilterCounts}
+        />
+
         <OrderFilters
           searchQuery={searchQuery}
           selectedAlertType={selectedAlertType}
@@ -240,13 +302,13 @@ export default function OrdersPage() {
           <table className="orders-table">
             <thead>
               <tr>
-                <th>ORDER ID</th>
-                <th>PRODUCT</th>
-                <th>CUSTOMER NAME</th>
-                <th>DEADLINE</th>
+                <th>ALERT LEVEL</th>
+                <th>PRODUCT + VENDOR</th>
+                <th>CUSTOMER</th>
+                <th>SLA TIMER</th>
                 <th>STATUS</th>
-                <th>ALERTS</th>
-                <th>ACTION</th>
+                <th>PREVIEW STATE</th>
+                <th>QUICK ACTIONS</th>
               </tr>
             </thead>
             <tbody>
@@ -261,32 +323,68 @@ export default function OrdersPage() {
                   const statusConfig = getStatusConfig(order.status)
                   const StatusIcon = statusConfig.icon
                   const deadline = formatDeadline(order.previewSlaDeadline)
-                  const hasAlerts = order.adminFlags.some((f) => !f.resolvedAt)
+                  const priorityInfo = (order as any).priorityInfo || calculateOrderPriority(order)
+                  const priorityColors = getPriorityColorScheme(priorityInfo.level)
+                  const isFresh = order.productType === 'Fresh Perishable'
 
                   return (
                     <tr
                       key={order.id}
-                      className={`order-row ${order.requiresAdminAction ? 'requires-action' : ''} ${hasAlerts ? 'has-alerts' : ''}`}
+                      className={`order-row order-priority-${priorityInfo.level} ${order.requiresAdminAction ? 'requires-action' : ''}`}
+                      style={{
+                        backgroundColor: priorityColors.bgColor,
+                        borderLeft: `4px solid ${priorityColors.borderColor}`,
+                      }}
                     >
-                      <td className="order-id">{order.orderNumber}</td>
-                      <td className="product-cell">
-                        <div className="product-info">
-                          <img
-                            src={order.productImageUrl || 'https://via.placeholder.com/60'}
-                            alt={order.productName}
-                            className="product-image"
-                            onError={(e) => {
-                              ;(e.target as HTMLImageElement).src = 'https://via.placeholder.com/60'
-                            }}
-                          />
-                          <span className="product-name">{order.productName}</span>
+                      <td className="alert-level-cell">
+                        <div className="priority-tags-container">
+                          {priorityInfo.tags.slice(0, 3).map((tag: string, idx: number) => (
+                            <PriorityTag key={idx} tag={tag} />
+                          ))}
+                          {priorityInfo.tags.length > 3 && (
+                            <span className="more-tags">+{priorityInfo.tags.length - 3}</span>
+                          )}
                         </div>
                       </td>
-                      <td className="customer-name">{order.customerName}</td>
-                      <td className="deadline-cell">
+                      <td className="product-vendor-cell">
+                        <div className="product-vendor-info">
+                          <div className="product-info-row">
+                            <img
+                              src={order.productImageUrl || 'https://via.placeholder.com/60'}
+                              alt={order.productName}
+                              className="product-image"
+                              onError={(e) => {
+                                ;(e.target as HTMLImageElement).src = 'https://via.placeholder.com/60'
+                              }}
+                            />
+                            <div className="product-details">
+                              <div className="product-name-row">
+                                <span className="product-name">{order.productName}</span>
+                                {isFresh && <PriorityTag tag="FRESH" />}
+                              </div>
+                              <div className="vendor-info-row">
+                                <Store className="vendor-icon" />
+                                <span className="vendor-name">{order.vendorName}</span>
+                                {order.vendorMetrics && (
+                                  <VendorPerformanceBadge order={order} />
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="customer-cell">
+                        <div className="customer-info">
+                          <div className="customer-name">{order.customerName}</div>
+                          {order.customerPhone && (
+                            <div className="customer-phone">{order.customerPhone}</div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="sla-timer-cell">
                         {deadline ? (
-                          <div className={`deadline ${deadline.isOverdue ? 'overdue' : ''}`}>
-                            <Clock className="deadline-icon" />
+                          <div className={`sla-timer ${deadline.isOverdue ? 'overdue' : ''}`}>
+                            <Clock className="sla-timer-icon" />
                             <span>{deadline.text}</span>
                           </div>
                         ) : (
@@ -305,11 +403,15 @@ export default function OrdersPage() {
                           <span>{order.status}</span>
                         </div>
                       </td>
-                      <td className="alerts-cell">
-                        <AlertBadge alerts={order.adminFlags} compact />
+                      <td className="preview-state-cell">
+                        {order.previewEnabled ? (
+                          <PreviewState order={order} />
+                        ) : (
+                          <span className="no-preview">No Preview</span>
+                        )}
                       </td>
-                      <td className="action-cell">
-                        <AdminActionMenu order={order} onAction={handleAdminAction} />
+                      <td className="quick-actions-cell">
+                        <InlineOrderActions order={order} onAction={handleAdminAction} />
                       </td>
                     </tr>
                   )

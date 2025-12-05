@@ -1,0 +1,55 @@
+.risk-filter-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.risk-preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.risk-preset-chip:hover:not(.disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.risk-preset-chip.active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.risk-preset-chip.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.risk-preset-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.risk-preset-label {
+  line-height: 1;
+}
+
+.risk-preset-count {
+  font-weight: 700;
+  font-size: 13px;
+  padding-left: 4px;
+}
+
