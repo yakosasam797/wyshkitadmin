@@ -18,6 +18,7 @@ const statusConfig: Record<OrderStatus | 'All', { label: string; icon: any }> = 
   'Ready for Pickup': { label: 'Ready for Pickup', icon: Truck },
   'Out for Delivery': { label: 'Out for Delivery', icon: Truck },
   'Delivered': { label: 'Completed', icon: CheckCircle },
+  'Cancelled': { label: 'Cancelled', icon: Package },
 }
 
 export default function OrderStatusTabs({ selectedStatus, onStatusChange, orderCounts }: OrderStatusTabsProps) {

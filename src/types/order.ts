@@ -7,11 +7,24 @@ export type OrderStatus =
   | 'Ready for Pickup'
   | 'Out for Delivery'
   | 'Delivered'
+  | 'Cancelled'
 
 export type ProductType = 
   | 'Regular'
   | 'Packaged Perishable'
   | 'Fresh Perishable'
+
+export type PayoutState = 
+  | 'Pending'
+  | 'Eligible'
+  | 'Scheduled'
+  | 'Paid'
+
+export type RTStatus = 
+  | 'none'
+  | 'initiated'
+  | 'in_transit'
+  | 'delivered_to_vendor'
 
 export type AdminAlertType = 
   | 'sla_breach'
@@ -43,11 +56,43 @@ export interface AdminIntervention {
   newStatus?: OrderStatus
 }
 
+export interface OrderTimelineEntry {
+  status: OrderStatus
+  timestamp: string
+  performedBy?: string
+  notes?: string
+}
+
+export interface PreviewVersion {
+  version: number
+  url: string
+  uploadedAt: string
+  approvedAt?: string
+  declinedAt?: string
+  customerFeedback?: string
+}
+
+export interface VendorMetrics {
+  credibilityScore: number // 0-100
+  slaSuccessRate: number // percentage
+  previewApprovalRate: number // percentage
+  returnsComplaintsRate: number // percentage
+  totalOrders: number
+}
+
+export interface CourierInfo {
+  courierId: string
+  courierName: string
+  courierPhone: string
+  assignedAt?: string
+}
+
 export interface Order {
   id: string
   orderNumber: string
   customerName: string
   customerEmail: string
+  customerPhone?: string
   productName: string
   productType: ProductType
   vendorName: string
@@ -58,6 +103,7 @@ export interface Order {
   updatedAt: string
   previewEnabled: boolean
   previewUrl?: string
+  previewVersions?: PreviewVersion[]
   previewUploadedAt?: string
   previewApprovedAt?: string
   previewDeclinedAt?: string
@@ -78,5 +124,25 @@ export interface Order {
   interventionHistory: AdminIntervention[]
   priorityScore?: number // Calculated field for sorting
   productImageUrl?: string
+  // New fields for enhanced UI
+  payoutState?: PayoutState
+  timeline?: OrderTimelineEntry[]
+  outForDeliverySince?: string
+  rtoStatus?: RTStatus
+  rtoInitiatedAt?: string
+  packingDeadline?: string
+  deliveryWindow?: {
+    from: string
+    to: string
+  }
+  requiredDeliveryBy?: string
+  vendorMetrics?: VendorMetrics
+  courier?: CourierInfo
+  customerComplaint?: {
+    reason: string
+    proofImages?: string[]
+    submittedAt: string
+    resolved?: boolean
+  }
 }
 

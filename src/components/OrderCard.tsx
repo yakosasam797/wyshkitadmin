@@ -47,6 +47,11 @@ const statusConfig: Record<OrderStatus, { color: string; icon: any; bgColor: str
     icon: CheckCircle,
     bgColor: '#d1fae5',
   },
+  'Cancelled': {
+    color: '#6b7280',
+    icon: AlertCircle,
+    bgColor: '#f3f4f6',
+  },
 }
 
 export default function OrderCard({ order }: OrderCardProps) {

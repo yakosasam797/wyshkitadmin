@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Order, OrderStatus, AdminAlertType } from '../types/order'
 import { mockOrders } from '../data/mockOrders'
 import AlertDashboard from '../components/AlertDashboard'
+import RiskRadar from '../components/RiskRadar'
 import OrderFilters from '../components/OrderFilters'
 import OrderStatusTabs from '../components/OrderStatusTabs'
 import AlertBadge from '../components/AlertBadge'
@@ -20,6 +21,7 @@ export default function OrdersPage() {
   const [requiresActionOnly, setRequiresActionOnly] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [activeRiskFilter, setActiveRiskFilter] = useState<'preview_sla' | 'fresh_perishables' | 'delivery_issues' | null>(null)
 
   // Calculate priority scores for orders
   const ordersWithPriority = useMemo(() => {
@@ -58,6 +60,7 @@ export default function OrdersPage() {
       'Ready for Pickup': 0,
       'Out for Delivery': 0,
       'Delivered': 0,
+      'Cancelled': 0,
     }
 
     orders.forEach((order) => {
@@ -160,6 +163,7 @@ export default function OrdersPage() {
       'Ready for Pickup': { icon: Truck, color: '#6366f1', bgColor: '#e0e7ff' },
       'Out for Delivery': { icon: Truck, color: '#ec4899', bgColor: '#fce7f3' },
       'Delivered': { icon: CheckCircle, color: '#059669', bgColor: '#d1fae5' },
+      'Cancelled': { icon: Package, color: '#6b7280', bgColor: '#f3f4f6' },
     }
     return configs[status]
   }
@@ -183,24 +187,33 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      <AlertDashboard
-        orders={orders}
-        onAlertFilter={(action) => {
-          if (action === 'critical_priority') {
-            setSelectedPriority('critical')
-            setSelectedAlertType('all')
-            setRequiresActionOnly(false)
-          } else if (action === 'requires_action') {
-            setRequiresActionOnly(true)
-            setSelectedAlertType('all')
-            setSelectedPriority('all')
-          } else {
-            setSelectedAlertType(action)
-            setSelectedPriority('all')
-            setRequiresActionOnly(false)
-          }
-        }}
-      />
+      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+        <RiskRadar
+          orders={orders}
+          onFilter={setActiveRiskFilter}
+          activeFilter={activeRiskFilter}
+        />
+        <div style={{ flex: 1 }}>
+          <AlertDashboard
+            orders={orders}
+            onAlertFilter={(action) => {
+              if (action === 'critical_priority') {
+                setSelectedPriority('critical')
+                setSelectedAlertType('all')
+                setRequiresActionOnly(false)
+              } else if (action === 'requires_action') {
+                setRequiresActionOnly(true)
+                setSelectedAlertType('all')
+                setSelectedPriority('all')
+              } else {
+                setSelectedAlertType(action)
+                setSelectedPriority('all')
+                setRequiresActionOnly(false)
+              }
+            }}
+          />
+        </div>
+      </div>
 
       <div className="orders-content">
         <OrderFilters
