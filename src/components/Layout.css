@@ -1,0 +1,151 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  color: #dc2626;
+}
+
+.logo-text {
+  color: #dc2626;
+  font-size: 1.25rem;
+}
+
+.logo-admin {
+  color: #4b5563;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.nav-link:hover {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.nav-link.active {
+  background-color: #dc2626;
+  color: white;
+}
+
+.nav-link.active .nav-icon {
+  color: white;
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-badge {
+  background-color: #dc2626;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
+.nav-link.active .nav-badge {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.icon-button:hover {
+  background-color: #f9fafb;
+}
+
+.icon-button .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.badge-button .badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background-color: #dc2626;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background-color: #ffffff;
+  min-height: calc(100vh - 70px);
+}
+

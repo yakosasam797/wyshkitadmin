@@ -1,0 +1,35 @@
+.skeleton-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.skeleton-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  font-weight: 400;
+  margin-bottom: 2rem;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.skeleton-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  color: #6b7280;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
