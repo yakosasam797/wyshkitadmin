@@ -1,4 +1,4 @@
-import { Order } from '../types/order'
+import { Order, OrderStatus } from '../types/order'
 import { Clock, Package, Truck, CheckCircle, AlertCircle, User, Store, MapPin } from 'lucide-react'
 import './OrderCard.css'
 
